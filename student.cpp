@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 #include "student.h"
 using namespace std;
 
@@ -11,14 +12,23 @@ void Student::input() {
     cout << "Enter Branch: ";
     getline(cin, branch);
     cout << "Enter Marks: ";
-    cin >> marks;
+    while (!(cin >> marks) || marks < 0 || marks > 100) {
+        cout << "Invalid marks. Enter again (0-100): ";
+        cin.clear();
+        cin.ignore(10000, '\n');
+    }
+
+    time_t now = time(0);
+    createdAt = ctime(&now);
+    createdAt.pop_back();
 }
 
 void Student::display() {
     cout << "Roll No: " << rollNo
          << ", Name: " << name
          << ", Branch: " << branch
-         << ", Marks: " << marks << endl;
+         << ", Marks: " << marks
+         << ", Created At: " << createdAt << endl;
 }
 
 int Student::getRollNo() {

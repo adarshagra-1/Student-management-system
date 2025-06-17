@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <cstdio>  // for remove, rename
+#include <cstdio>
 #include <vector>
 #include <algorithm>
 #include "student.h"
@@ -13,12 +13,11 @@ bool login() {
     cin >> user;
     cout << "Password: ";
     cin >> pass;
-
     if (user == "admin" && pass == "1234") {
-        cout << "Login successful!\n";
+        cout << "Login successful.\n";
         return true;
     } else {
-        cout << "Invalid credentials!\n";
+        cout << "Invalid credentials.\n";
         return false;
     }
 }
@@ -29,12 +28,16 @@ void addStudent() {
     s.input();
     fout.write((char*)&s, sizeof(s));
     fout.close();
-    cout << "Student added!\n";
+    cout << "Student added.\n";
 }
 
 void displayStudents() {
-    Student s;
     ifstream fin("students.txt", ios::in | ios::binary);
+    if (!fin) {
+        cout << "No student records found.\n";
+        return;
+    }
+    Student s;
     while (fin.read((char*)&s, sizeof(s))) {
         s.display();
     }
@@ -42,13 +45,16 @@ void displayStudents() {
 }
 
 void searchStudent() {
+    ifstream fin("students.txt", ios::in | ios::binary);
+    if (!fin) {
+        cout << "No student records found.\n";
+        return;
+    }
     int targetRollNo;
     cout << "Enter Roll No to search: ";
     cin >> targetRollNo;
-
     Student s;
     bool found = false;
-    ifstream fin("students.txt", ios::in | ios::binary);
     while (fin.read((char*)&s, sizeof(s))) {
         if (s.getRollNo() == targetRollNo) {
             cout << "Student found:\n";
@@ -59,18 +65,20 @@ void searchStudent() {
     }
     fin.close();
     if (!found)
-        cout << "Student not found!\n";
+        cout << "Student not found.\n";
 }
 
 void deleteStudent() {
+    ifstream fin("students.txt", ios::in | ios::binary);
+    if (!fin) {
+        cout << "No student records found.\n";
+        return;
+    }
     int targetRollNo;
     cout << "Enter Roll No to delete: ";
     cin >> targetRollNo;
-
     Student s;
-    ifstream fin("students.txt", ios::in | ios::binary);
     ofstream fout("temp.txt", ios::out | ios::binary);
-
     bool found = false;
     while (fin.read((char*)&s, sizeof(s))) {
         if (s.getRollNo() != targetRollNo) {
@@ -79,75 +87,73 @@ void deleteStudent() {
             found = true;
         }
     }
-
     fin.close();
     fout.close();
-
     remove("students.txt");
     rename("temp.txt", "students.txt");
-
     if (found)
-        cout << "Student deleted!\n";
+        cout << "Student deleted.\n";
     else
-        cout << "Student not found!\n";
+        cout << "Student not found.\n";
 }
 
 void editStudent() {
+    fstream file("students.txt", ios::in | ios::out | ios::binary);
+    if (!file) {
+        cout << "No student records found.\n";
+        return;
+    }
     int targetRollNo;
     cout << "Enter Roll No to edit: ";
     cin >> targetRollNo;
-
-    fstream file("students.txt", ios::in | ios::out | ios::binary);
-
     Student s;
     bool found = false;
-
     while (file.read((char*)&s, sizeof(s))) {
         if (s.getRollNo() == targetRollNo) {
             cout << "Enter new details:\n";
             s.input();
-
             file.seekp(-sizeof(s), ios::cur);
             file.write((char*)&s, sizeof(s));
-
             found = true;
-            cout << "Student record updated!\n";
+            cout << "Student record updated.\n";
             break;
         }
     }
-
     file.close();
     if (!found)
-        cout << "Student not found!\n";
+        cout << "Student not found.\n";
 }
 
 void countStudents() {
-    Student s;
     ifstream fin("students.txt", ios::in | ios::binary);
+    if (!fin) {
+        cout << "No student records found.\n";
+        return;
+    }
+    Student s;
     int count = 0;
-
     while (fin.read((char*)&s, sizeof(s))) {
         count++;
     }
-
     fin.close();
     cout << "Total number of students: " << count << endl;
 }
 
 void sortByMarks() {
+    ifstream fin("students.txt", ios::in | ios::binary);
+    if (!fin) {
+        cout << "No student records found.\n";
+        return;
+    }
     Student s;
     vector<Student> students;
-
-    ifstream fin("students.txt", ios::in | ios::binary);
     while (fin.read((char*)&s, sizeof(s))) {
         students.push_back(s);
     }
     fin.close();
-
     sort(students.begin(), students.end(), [](Student a, Student b) {
         return a.getMarks() > b.getMarks();
     });
-
     cout << "Students sorted by marks (highest first):\n";
     for (auto &stu : students) {
         stu.display();
@@ -158,7 +164,6 @@ int main() {
     if (!login()) {
         return 0;
     }
-
     int choice;
     do {
         cout << "\n--- Student Management System ---\n";
@@ -172,7 +177,6 @@ int main() {
         cout << "0. Exit\n";
         cout << "Enter choice: ";
         cin >> choice;
-
         switch (choice) {
             case 1: addStudent(); break;
             case 2: displayStudents(); break;
@@ -181,10 +185,9 @@ int main() {
             case 5: editStudent(); break;
             case 6: countStudents(); break;
             case 7: sortByMarks(); break;
-            case 0: cout << "Exiting...\n"; break;
-            default: cout << "Invalid choice\n";
+            case 0: cout << "Exiting.\n"; break;
+            default: cout << "Invalid choice.\n";
         }
     } while (choice != 0);
-
     return 0;
 }

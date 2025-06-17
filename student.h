@@ -10,6 +10,7 @@ private:
     string name;
     string branch;
     float marks;
+    string createdAt;
 
 public:
     void input();
