@@ -18,7 +18,6 @@ It is a console-based application that demonstrates **OOP concepts**, **file han
 
 - C++
 - OOP (Object-Oriented Programming)
-- File I/O (binary file storage)
 - Command Line Interface (CLI)
 
 ## How To Run
